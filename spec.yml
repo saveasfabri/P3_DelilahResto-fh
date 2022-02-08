@@ -1,0 +1,792 @@
+swagger: "2.0"
+info:
+  description: "Online ordering system for a restaurant. This REST API allows to add, cancel, modify and obtain information about a database."
+  version: "1.0.0"
+  title: "Delilah Restó"
+  contact:
+    email: "danielaberardi@live.com.ar"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost"
+basePath: "/v2"
+tags:
+- name: "products"
+  description: "Access to our menu"
+- name: "orders"
+  description: "Access to the orders"
+- name: "users"
+  description: "Operations corresponding to users"
+schemes:
+- "https"
+- "http"
+paths:
+  /products:
+    get:
+        tags:
+        - "products"
+        summary: "Return the list of all the products"
+        description: ""
+        operationId: "getProducts"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "Authorization token obtained at logging"
+          required: true
+          type: "string"
+        responses:
+          "200":
+            description: "Successful operation"
+            schema:
+              type: "array"
+              items:
+                $ref: '#/definitions/ProductList'
+          "401":
+            description: "Unauthorized"
+    post:
+      tags:
+      - "products"
+      summary: "Add a new product to the menu"
+      description: ""
+      operationId: "addProduct"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Authentication token with administrator role"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Product object to add to the list"
+        required: true
+        schema:
+          $ref: "#/definitions/NewProduct"
+      responses:
+        "201":
+          description: "Successfully created product"
+          schema:
+            $ref: '#/definitions/ProductP'
+        "400":
+          description: "Bad request"
+        "403":
+            description: "Unauthorized"
+  /products/{productId}:
+    put:
+      tags:
+      - "products"
+      summary: "Modify a product"
+      description: ""
+      operationId: "updateProduct"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Authentication token with administrator role"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "productId"
+        description: "Product Id to modify"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Product modified"
+        required: true
+        schema:
+          $ref: "#/definitions/NewProduct"
+      responses:
+        "200":
+          description: "Product successfully modified"
+          schema:
+            $ref: "#/definitions/ProductP"
+        "400":
+          description: "Bad request"
+        "403":
+          description: "Unauthorized"
+        "404":
+          description: "Product not found"
+    delete:
+      tags:
+      - "products"
+      summary: "Delete a product"
+      description: ""
+      operationId: "deleteProduct"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Authentication token with administrator role"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "productId"
+        description: "Product Id to delete"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Product removed successfully"
+          schema:
+            $ref: "#/definitions/Product"
+        "403":
+          description: "Unauthorized"
+        "404":
+          description: "Product not found"
+  /orders:
+    get:
+        tags:
+        - "orders"
+        summary: "Return the list of all the orders"
+        description: ""
+        operationId: "getOrders"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "Authentication token with administrator role"
+          required: true
+          type: "string"
+        responses:
+          "200":
+            description: "Successful operation"
+            schema:
+              type: "array"
+              items:
+                $ref: '#/definitions/Order'
+          "403":
+            description: "Unauthorized"
+    post:
+      tags:
+      - "orders"
+      summary: "Create a new order"
+      description: ""
+      operationId: "addOrder"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Authorization token obtained at logging"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Order object to create"
+        required: true
+        schema:
+          $ref: "#/definitions/NewOrder"
+      responses:
+        "201":
+          description: "Order successfully created"
+          schema:
+            $ref: '#/definitions/OrderPost'
+        "400":
+          description: "Bad request"
+        "401":
+            description: "Unauthorized"
+  /orders/{orderId}:
+    put:
+      tags:
+      - "orders"
+      summary: "Modify an order"
+      description: ""
+      operationId: "updateOrder"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Authentication token with administrator role"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "orderId"
+        description: "Order Id to modify"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Order modified"
+        required: true
+        schema:
+          $ref: "#/definitions/StatusModified"
+      responses:
+        "200":
+          description: "Order successfully modified"
+          schema:
+            $ref: "#/definitions/OrderModified"
+        "400":
+          description: "Bad request"
+        "403":
+          description: "Unauthorized"
+        "404":
+          description: "Order not found"
+    delete:
+      tags:
+      - "orders"
+      summary: "Delete an order"
+      description: ""
+      operationId: "deleteOrder"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Authentication token with administrator role"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "orderId"
+        description: "Order Id to delete"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Order removed successfully"
+          schema:
+            $ref: "#/definitions/OrderDeleted"
+        "403":
+          description: "Unauthorized"
+        "404":
+          description: "Order not found"
+  /users:
+    get:
+        tags:
+        - "users"
+        summary: "Return the list of all the users"
+        description: ""
+        operationId: "getUsers"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "Authentication token with administrator role"
+          required: true
+          type: "string"
+        responses:
+          "200":
+            description: "Successful operation"
+            schema:
+              type: "array"
+              items:
+                $ref: '#/definitions/User'
+          "403":
+            description: "Unauthorized"
+  /users/register:
+    post:
+      tags:
+      - "users"
+      summary: "Create a new user"
+      description: ""
+      operationId: "createUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User object to create <br> Password format: minimum 4 characters, maximum 15 characters, at least 1 character, at least 1 digit, no blank spaces"
+        required: true
+        schema:
+          $ref: "#/definitions/NewUser"
+      responses:
+        "201":
+          description: "User successfully created"
+          schema:
+            $ref: '#/definitions/UserCreated'
+        "400":
+          description: "Bad request"
+  /users/login:
+    post:
+      tags:
+      - "users"
+      summary: "Log In"
+      description: ""
+      operationId: "loginUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User object"
+        required: true
+        schema:
+          $ref: "#/definitions/LoginUser"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: '#/definitions/Token'
+        "400":
+          description: "Bad request"
+  /users/{userId}:
+    get:
+        tags:
+        - "users"
+        summary: "Return user information"
+        description: ""
+        operationId: "getInfoUser"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "Authorization token obtained at logging"
+          required: true
+          type: "string"
+        - in: "path"
+          name: "userId"
+          description: "User Id"
+          required: true
+          type: "string"
+        responses:
+          "200":
+            description: "Successful operation"
+            schema:
+              $ref: '#/definitions/User'
+          "401":
+            description: "Unauthorized"
+          "404":
+            description: "User not found"
+    put:
+      tags:
+      - "users"
+      summary: "Modify an user"
+      description: ""
+      operationId: "updateUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Authorization token obtained at logging"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "userId"
+        description: "User Id to modify"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "User modified"
+        required: true
+        schema:
+          $ref: "#/definitions/UserToModify"
+      responses:
+        "200":
+          description: "User successfully modified"
+          schema:
+            $ref: "#/definitions/UserPut"
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "User not found"
+    delete:
+      tags:
+      - "users"
+      summary: "Delete an user"
+      description: ""
+      operationId: "deleteUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Authorization token obtained at logging"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "userId"
+        description: "User Id to delete"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "User successfully removed"
+          schema:
+            $ref: "#/definitions/User"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "User not found"
+  /users/{userId}/orders:
+    get:
+      tags:
+      - "users"
+      summary: "Return user orders"
+      description: ""
+      operationId: "getOrdersUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Authorization token obtained at logging"
+        required: true
+        type: "string"
+      - in: "path"
+        name: "userId"
+        description: "User Id"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/Order'
+        "401":
+          description: "Unauthorized"      
+definitions:
+  ProductList:
+    type: "object"
+    properties:
+      product_id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        format: ""
+        example: "pizza"
+      unit_price:
+        type: "integer"
+        format: "int32"
+        example: 200
+  NewProduct:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        format: ""
+        example: "pizza"
+      price:
+        type: "integer"
+        format: "int32"
+        example: 20
+  Product:
+    type: "object"
+    properties:
+      product_id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        format: ""
+        example: "pizza"
+      unit_price:
+        type: "integer"
+        format: "int32"
+        example: 200
+  ProductP:
+    type: "object"
+    properties:
+      productId:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        format: ""
+        example: "pizza"
+      price:
+        type: "integer"
+        format: "int32"
+        example: 200
+  Order:
+    type: "object"
+    properties:
+      order_id:
+        type: "integer"
+        format: "int64"
+      status:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "nuevo"
+        - "confirmado"
+        - "preparando"
+        - "enviando"
+        - "entregado"
+      time:
+        type: "string"
+        format: "date-time" 
+        example: "25-11-2021 12:29:50"
+      payment_method:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "efectivo"
+        - "tarjeta"
+      user_id:
+        type: "integer"
+        format: "int64"
+      products: 
+        type: "object"
+        example: [{order_id: 1, product_id: 1, quantity: 2, name: "pizza", unit_price: 300, subtotal: 600}, {order_id: 1, product_id: 2, quantity: 1, name: "hamburger", unit_price: 250, subtotal: 250}]
+      total:
+        type: "number"
+        format: "float"
+        example: 850
+      user: 
+        $ref: "#/definitions/User"
+  OrderPost:
+    type: "object"
+    properties:
+      orderId:
+        type: "integer"
+        format: "int64"
+      status:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "nuevo"
+        - "confirmado"
+        - "preparando"
+        - "enviando"
+        - "entregado"
+      time:
+        type: "string"
+        format: "date-time" 
+        example: "25-11-2021 12:29:50"
+      paymentMethod:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "efectivo"
+        - "tarjeta"
+      userId:
+        type: "integer"
+        format: "int64"
+      products: 
+        type: "object"
+        example: [{productId: 1, quantity: 2}, {productId: 2, quantity: 1}]
+      user: 
+        $ref: "#/definitions/User"
+  NewOrder:
+    type: "object"
+    properties:
+      products: 
+        type: "object"
+        example: [{productId: 5, quantity: 2}, {productId: 7, quantity: 3}]
+      paymentMethod:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "efectivo"
+        - "tarjeta"
+        example: "tarjeta"
+  StatusModified: 
+    type: "object"
+    properties:
+      status: 
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "nuevo"
+        - "confirmado"
+        - "preparando"
+        - "enviando"
+        - "entregado"
+  OrderModified:
+    type: "object"
+    properties:
+      orderId:
+        type: "integer"
+        format: "int64"
+      status:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "nuevo"
+        - "confirmado"
+        - "preparando"
+        - "enviando"
+        - "entregado"
+      time:
+        type: "string"
+        format: "date-time" 
+        example: "25-11-2021 12:29:50"
+      paymentMethod:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "efectivo"
+        - "tarjeta"
+      userId:
+        type: "integer"
+        format: "int64"
+  OrderDeleted:
+    type: "object"
+    properties:
+      order_id:
+        type: "integer"
+        format: "int64"
+      status:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "nuevo"
+        - "confirmado"
+        - "preparando"
+        - "enviando"
+        - "entregado"
+      time:
+        type: "string"
+        format: "date-time" 
+        example: "25-11-2021 12:29:50"
+      payment_method:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "efectivo"
+        - "tarjeta"
+      user_id:
+        type: "integer"
+        format: "int64"
+  User:
+    type: "object"
+    properties:
+      user_id:
+        type: "integer"
+        format: "int64"
+        example: 32
+      username:
+        type: "string"
+        example: "colon_fabri"
+      full_name:
+        type: "string"
+        example: "Fabri Hang"
+      email:
+        type: "string"
+        example: "fabrihang@gmail.com"
+      telephone:
+        type: "integer"
+        example: "2252415235"
+      address:
+        type: "string"
+        example: "JJ Paso 3535, Santa Fe, Arg"
+      admin:
+        type: "integer"
+        format: "int64"
+        example: 0
+  UserPut:
+    type: "object"
+    properties:
+      userId:
+        type: "integer"
+        format: "int64"
+        example: 32
+      username:
+        type: "string"
+        example: "colon_fabri"
+      fullName:
+        type: "string"
+        example: "Fabri Hang"
+      email:
+        type: "string"
+        example: "fabrihang@gmail.com"
+      telephone:
+        type: "integer"
+        example: "2252415235"
+      address:
+        type: "string"
+        example: "JJ Paso 3535, Santa Fe, Arg"
+      admin:
+        type: "integer"
+        format: "int64"
+        example: 0
+  UserCreated:
+    type: "object"
+    properties:
+      user_id:
+        type: "integer"
+        format: "int64"
+        example: 32
+      username:
+        type: "string"
+        example: "colon_fabri"
+      full_name:
+        type: "string"
+        example: "Fabri Hang"
+      email:
+        type: "string"
+        example: "fabrihang@gmail.com"
+      telephone:
+        type: "integer"
+        example: "2252415235"
+      address:
+        type: "string"
+        example: "JJ Paso 3535, Santa Fe, Arg"
+  NewUser:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        example: "colon_fabri"
+      fullName:
+        type: "string"
+        example: "Fabri Hang"
+      email:
+        type: "string"
+        example: "fabrihang@gmail.com"
+      telephone:
+        type: "integer"
+        example: "2252415235"
+      address:
+        type: "string"
+        example: "JJ Paso 3535, Santa Fe, Arg"
+      password:
+        type: "string"
+  UserToModify:
+    type: "object"
+    properties:
+      fullName:
+        type: "string"
+        example: "Fabri Hang"
+      email:
+        type: "string"
+        example: "fabrihang@gmail.com"
+      telephone:
+        type: "integer"
+        example: "2252415235"
+      address:
+        type: "string"
+        example: "JJ Paso 3535, Santa Fe, Arg"
+        password:
+        type: "string"
+  LoginUser:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        example: "colon_fabri"
+      password:
+        type: "string"
+  Token:
+    type: "string"
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRhbiIsImFkbWluIjoxLCJ1c2VySWQiOjEzLCJpYXQiOjE2MTYwMTMyMDF9.0H4NvoxUs0Nh_V7-Um3uEEVVY-s_2yKUCdf1-JoJQ0"
