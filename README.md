@@ -18,7 +18,7 @@ This project proposes the creation of an online ordering system for a restaurant
 
 - Swagger to build API Documentation
 
-## Installation :octocat:
+## Installation:
 Clone the project from a terminal
 
 `git clone https://github.com/saveasfabri/P3_DelilahResto-fh.git`
@@ -31,7 +31,7 @@ Install the required dependencies for the correct operation of the application
 ## Database
 Use the *delilah_resto.sql* file to import it into your Database client, it will provide the entire structure.
 
-## :warning: Important
+## Important
 Remember to modify the file *db.js* with the data of your environment.
 
 ## Start the Server 
